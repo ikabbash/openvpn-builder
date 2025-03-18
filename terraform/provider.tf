@@ -15,5 +15,5 @@ provider "azurerm" {
 resource "azurerm_resource_group" "openvpn_rg" {
   name     = "openvpn-rg"
   location = var.region
-  tags = var.resource_tag
+  tags     = var.resource_tag
 }

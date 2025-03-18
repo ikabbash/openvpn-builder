@@ -3,7 +3,7 @@ resource "azurerm_public_ip" "openvpn_public_ip" {
   location            = azurerm_resource_group.openvpn_rg.location
   resource_group_name = azurerm_resource_group.openvpn_rg.name
   allocation_method   = "Static"
-  tags = var.resource_tag
+  tags                = var.resource_tag
 }
 
 resource "azurerm_network_interface" "openvpn_ni" {
@@ -25,7 +25,7 @@ resource "azurerm_linux_virtual_machine" "openvpn_vm" {
   location              = azurerm_resource_group.openvpn_rg.location
   resource_group_name   = azurerm_resource_group.openvpn_rg.name
   size                  = var.vm_size
-  admin_username        = "ubuntu"
+  admin_username        = var.vm_user
   network_interface_ids = [azurerm_network_interface.openvpn_ni.id]
   admin_ssh_key {
     username   = "ubuntu"
@@ -40,6 +40,15 @@ resource "azurerm_linux_virtual_machine" "openvpn_vm" {
     offer     = "0001-com-ubuntu-server-jammy"
     sku       = "22_04-lts"
     version   = "latest"
+  }
+  provisioner "local-exec" {
+    command = <<EOT
+      ansible-playbook \
+        -i '${azurerm_public_ip.openvpn_public_ip.ip_address},' \
+        -u ${var.vm_user} \
+        --private-key ~/.ssh/id_rsa \
+        ../ansible/playbook.yml
+    EOT
   }
   tags = var.resource_tag
 }

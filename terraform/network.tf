@@ -3,7 +3,7 @@ resource "azurerm_virtual_network" "vnet" {
   location            = azurerm_resource_group.openvpn_rg.location
   resource_group_name = azurerm_resource_group.openvpn_rg.name
   address_space       = ["10.0.0.0/16"]
-  tags = var.resource_tag
+  tags                = var.resource_tag
 }
 
 resource "azurerm_subnet" "subnet1" {
@@ -17,7 +17,7 @@ resource "azurerm_network_security_group" "subnet_sg" {
   name                = "vnet-security-group"
   location            = azurerm_resource_group.openvpn_rg.location
   resource_group_name = azurerm_resource_group.openvpn_rg.name
-  tags = var.resource_tag
+  tags                = var.resource_tag
 }
 
 resource "azurerm_network_security_rule" "subnet_sg_rule" {

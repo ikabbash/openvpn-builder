@@ -3,9 +3,14 @@ variable "public_key_path" {
   default     = ""
 }
 
+variable "vm_user" {
+  description = "The username for the VM"
+  default     = "ubuntu"
+}
+
 variable "subscription_id" {
   description = "Your Azure subscription ID"
-  default = ""
+  default     = ""
 }
 
 variable "vm_size" {
