@@ -1,0 +1,16 @@
+services:
+  stunnel-client:
+    image: stunnel-client
+    container_name: stunnel-client
+    build:
+      context: .
+    volumes:
+    - ./stunnel.conf:/etc/stunnel/stunnel.conf
+    ports:
+    - 127.0.0.1:1194:1194
+    networks:
+      - vpn-network
+
+networks:
+  vpn-network:
+    driver: bridge
