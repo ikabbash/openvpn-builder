@@ -1,0 +1,12 @@
+log = append
+output = /var/log/stunnel.log
+debug = 7
+
+[openvpn]
+sslVersionMin = TLSv1.2
+sslVersionMax = TLSv1.3
+client = no
+accept = 443
+connect = 127.0.0.1:{{ openvpn_port }}
+cert = /etc/stunnel/openvpn-stunnel-cert.pem
+key = /etc/stunnel/openvpn-stunnel-key.pem

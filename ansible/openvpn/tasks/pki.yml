@@ -1,0 +1,56 @@
+# Initiates EasyRSA public key infrastructure and copies them to OpenVPN server dir
+- name: Create EasyRSA directory
+  file:
+    path: "{{ easyrsa_dir }}"
+    state: directory
+
+- name: Initialize EasyRSA PKI
+  command: "{{ easyrsa_dir }}/easyrsa init-pki"
+  args:
+    chdir: "{{ easyrsa_dir }}"
+    creates: "{{ easyrsa_dir }}/pki"
+
+- name: Build CA
+  command: "{{ easyrsa_dir }}/easyrsa --batch build-ca nopass"
+  args:
+    chdir: "{{ easyrsa_dir }}"
+    creates: "{{ easyrsa_dir }}/pki/ca.crt"
+
+- name: Build server certificate
+  command: "{{ easyrsa_dir }}/easyrsa --batch build-server-full server nopass"
+  args:
+    chdir: "{{ easyrsa_dir }}"
+    creates: "{{ easyrsa_dir }}/pki/issued/server.crt"
+
+- name: Build client certificate
+  command: "{{ easyrsa_dir }}/easyrsa --batch build-client-full client nopass"
+  args:
+    chdir: "{{ easyrsa_dir }}"
+    creates: "{{ easyrsa_dir }}/pki/issued/client.crt"
+
+- name: Generate CRL
+  command: "{{ easyrsa_dir }}/easyrsa gen-crl"
+  args:
+    chdir: "{{ easyrsa_dir }}"
+    creates: "{{ easyrsa_dir }}/pki/crl.pem"
+
+- name: Copy certificates and keys to OpenVPN directory
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ openvpn_dir }}/{{ item.dest }}"
+    remote_src: yes
+  with_items:
+    - { src: "{{ easyrsa_dir }}/pki/ca.crt", dest: "ca.crt" }
+    - { src: "{{ easyrsa_dir }}/pki/issued/server.crt", dest: "server.crt" }
+    - { src: "{{ easyrsa_dir }}/pki/private/server.key", dest: "server.key" }
+    - { src: "{{ easyrsa_dir }}/pki/crl.pem", dest: "crl.pem" }
+
+- name: Generate TLS Crypt key
+  command: "openvpn --genkey secret {{ openvpn_dir }}/tc.key"
+  args:
+    creates: "{{ openvpn_dir }}/tc.key"
+
+- name: Generate DH parameters
+  command: "openssl dhparam -out {{ openvpn_dir }}/dh.pem 2048"
+  args:
+    creates: "{{ openvpn_dir }}/dh.pem"

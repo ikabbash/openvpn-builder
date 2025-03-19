@@ -1,0 +1,23 @@
+local 0.0.0.0
+port {{ openvpn_port }}
+proto {{ openvpn_proto }}
+dev tun
+ca ca.crt
+cert server.crt
+key server.key
+dh dh.pem
+auth SHA512
+tls-crypt tc.key
+topology subnet
+server {{ openvpn_subnet }} {{ openvpn_netmask }}
+push "redirect-gateway def1 bypass-dhcp"
+ifconfig-pool-persist ipp.txt
+push "dhcp-option DNS {{ openvpn_dns }}"
+push "block-outside-dns"
+keepalive 10 120
+user nobody
+group nogroup
+persist-key
+persist-tun
+verb 3
+crl-verify crl.pem

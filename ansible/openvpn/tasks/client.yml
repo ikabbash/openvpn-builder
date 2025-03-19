@@ -1,0 +1,39 @@
+# Creates client.ovpn file and downloads it to the user's machine
+- name: Read CA certificate
+  slurp:
+    path: "{{ openvpn_dir }}/ca.crt"
+  register: ca_crt
+
+- name: Read client certificate
+  slurp:
+    path: "{{ easyrsa_dir }}/pki/issued/client.crt"
+  register: client_crt
+
+- name: Read client private key
+  slurp:
+    path: "{{ easyrsa_dir }}/pki/private/client.key"
+  register: client_key
+
+- name: Read TLS Crypt key
+  slurp:
+    path: "{{ openvpn_dir }}/tc.key"
+  register: tc_key
+
+- name: Generate client configuration file
+  template:
+    src: client.ovpn.j2
+    dest: "/home/{{ ansible_user }}/client.ovpn"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0600'
+
+- name: Fetch a file from a remote server
+  fetch:
+    src: "/home/{{ ansible_user }}/client.ovpn"
+    dest: "../client/client.ovpn"
+    flat: yes
+
+
+- name: Display completion message
+  debug:
+    msg: "OpenVPN server setup complete! Client configuration file: /home/{{ ansible_user }}/client.ovpn"

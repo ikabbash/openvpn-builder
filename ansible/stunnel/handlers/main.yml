@@ -1,0 +1,6 @@
+---
+- name: Start stunnel
+  service:
+    name: stunnel4
+    enabled: yes
+    state: started

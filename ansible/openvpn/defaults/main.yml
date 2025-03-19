@@ -1,0 +1,8 @@
+---
+openvpn_port: 1194
+openvpn_proto: tcp
+openvpn_dns: "1.1.1.1"
+openvpn_subnet: "10.8.0.0"
+openvpn_netmask: "255.255.255.0"
+easyrsa_dir: "/usr/share/easy-rsa"
+openvpn_dir: "/etc/openvpn/server"

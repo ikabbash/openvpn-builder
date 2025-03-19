@@ -1,0 +1,37 @@
+---
+- name: Install stunnel and openssl
+  apt:
+    name:
+      - stunnel4
+      - openssl
+    update_cache: yes
+    state: present
+
+- name: Create /etc/stunnel directory
+  file:
+    path: /etc/stunnel
+    state: directory
+    mode: '0755'
+
+- name: Generate private key
+  community.crypto.openssl_privatekey:
+    path: /etc/stunnel/openvpn-stunnel-key.pem
+    type: RSA
+    size: 4096
+    mode: '0600'
+
+- name: Generate self-signed certificate
+  community.crypto.x509_certificate:
+    path: /etc/stunnel/openvpn-stunnel-cert.pem
+    privatekey_path: /etc/stunnel/openvpn-stunnel-key.pem
+    provider: selfsigned
+    selfsigned_digest: sha256
+    selfsigned_not_after: +3650d
+    mode: '0644'
+
+- name: Create stunnel configuration file
+  template:
+    src: stunnel.conf.j2
+    dest: /etc/stunnel/stunnel.conf
+    mode: '0644'
+  notify: Start stunnel

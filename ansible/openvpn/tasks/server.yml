@@ -1,0 +1,34 @@
+# Create OpenVPN server config, configure sysctl and route table
+- name: Create OpenVPN server configuration file
+  template:
+    src: server.conf.j2
+    dest: "{{ openvpn_dir }}/server.conf"
+
+- name: Enable IP forwarding
+  lineinfile:
+    path: /etc/sysctl.conf
+    line: "net.ipv4.ip_forward=1"
+    state: present
+
+- name: Apply sysctl settings
+  command: "sysctl -p"
+
+- name: Configure iptables
+  iptables:
+    chain: POSTROUTING
+    table: nat
+    source: "{{ openvpn_subnet }}/24"
+    out_interface: eth0
+    jump: MASQUERADE
+
+- name: Ensure /etc/iptables directory exists
+  file:
+    path: /etc/iptables
+    state: directory
+    mode: '0755'
+
+- name: Save iptables rules
+  shell: "iptables-save > /etc/iptables/rules.v4"
+  args:
+    creates: "/etc/iptables/rules.v4"
+  notify: Start openvpn
