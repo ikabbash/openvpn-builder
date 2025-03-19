@@ -1,4 +1,13 @@
 # OpenVPN Builder
+- [Overview](#overview)
+    - [Limitations](#limitations)
+- [Setup](#setup)
+    - [Ansible](#ansible)
+    - [Terraform](#terraform)
+    - [Client](#client)
+    - [Steps Summary](#steps-summary)
+- [References](#references)
+
 This repo automates setting up your own personal OpenVPN server, using Terraform to spin up the VM and Ansible to handle the installation and configuration of OpenVPN and Stunnel (executed by Terraform).
 
 ## Overview
