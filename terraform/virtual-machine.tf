@@ -43,10 +43,11 @@ resource "azurerm_linux_virtual_machine" "openvpn_vm" {
   }
   provisioner "local-exec" {
     command = <<EOT
+      sleep 5s &&\
+      ssh-keyscan -H ${azurerm_public_ip.openvpn_public_ip.ip_address} >> ~/.ssh/known_hosts &&\
       ansible-playbook \
         -i '${azurerm_public_ip.openvpn_public_ip.ip_address},' \
         -u ${var.vm_user} \
-        --private-key ~/.ssh/id_rsa \
         ../ansible/playbook.yml
     EOT
   }
